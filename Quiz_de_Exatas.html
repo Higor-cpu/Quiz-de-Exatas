@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz de Exatas</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); /* Fonte Arcade Gamer */
+
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background-color: #000;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background-image: url('seu_fundo.png'); /* Substitua pelo caminho da sua imagem de fundo */
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 24px; /* Tamanho ajustado */
+      color: white;
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; /* Efeito neon */
+      margin-bottom: 20px;
+    }
+
+    #configuracoes {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 12px; /* Tamanho ajustado */
+      color: white;
+      background-color: #800080; /* Roxo */
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin: 5px;
+    }
+
+    select {
+      font-size: 12px; /* Tamanho ajustado */
+      font-family: 'Press Start 2P', cursive;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: #800080; /* Roxo */
+      color: white;
+      border: none;
+    }
+
+    #nomesJogadores {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #nomesJogadores input {
+      font-size: 10px; /* Tamanho ajustado */
+      font-family: 'Press Start 2P', cursive;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: #4CAF50; /* Verde */
+      color: white;
+      border: none;
+    }
+
+    button {
+      font-size: 16px; /* Tamanho ajustado */
+      font-family: 'Press Start 2P', cursive;
+      background-color: #4CAF50; /* Verde */
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #painel-lateral {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      border: 2px solid white; /* Borda branca */
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      width: 300px; /* Largura aumentada */
+    }
+
+    #vezJogador {
+      font-size: 14px; /* Tamanho ajustado */
+      color: white;
+      background-color: #800080; /* Roxo */
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      white-space: nowrap; /* Evita quebra de linha */
+    }
+
+    #pontuacao {
+      font-size: 14px; /* Tamanho ajustado */
+      color: white;
+      margin-top: 10px;
+      white-space: normal; /* Permite quebra de linha */
+    }
+
+    #pergunta-container {
+      margin-top: 20px;
+      font-size: 14px;
+      color: white;
+      background-color: #800080; /* Roxo */
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    #tabuleiro-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    #tabuleiro {
+      display: grid;
+      grid-template-columns: repeat(11, 30px); /* Tamanho reduzido */
+      grid-template-rows: repeat(11, 30px); /* Tamanho reduzido */
+      gap: 1px;
+      border: 4px solid white; /* Borda branca */
+      background-color: #000; /* Fundo preto */
+      border-radius: 10px;
+    }
+
+    .celula {
+      width: 30px; /* Tamanho reduzido */
+      height: 30px; /* Tamanho reduzido */
+      background-color: rgba(255, 255, 255, 0.1); /* Fundo dos quadrados */
+      border: 1px solid white; /* Riscos brancos */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .jogador {
+      color: white;
+      border: 2px solid black;
+    }
+
+    .coordenada {
+      background-color: white; /* Fundo branco para números e letras */
+      color: black; /* Texto preto */
+      font-weight: bold;
+      cursor: default;
+      display: flex;
+      align-items: center; /* Centraliza verticalmente */
+      justify-content: center; /* Centraliza horizontalmente */
+    }
+
+    .ponto {
+      width: 15px; /* Tamanho reduzido */
+      height: 15px; /* Tamanho reduzido */
+      background-color: #FFD700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px; /* Tamanho reduzido */
+      font-weight: bold;
+    }
+
+    .linha-inicio {
+      background-color: #00ff00; /* Verde neon para a linha de início */
+    }
+
+    .linha-chegada {
+      background-color: #ff0000; /* Vermelho para a linha de chegada */
+    }
+
+    #temporizador-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #tempoRestante {
+      font-size: 14px; /* Tamanho ajustado */
+      color: white;
+      background-color: #00bfff; /* Azul claro */
+      padding: 10px;
+      border-radius: 5px;
+      white-space: nowrap; /* Evita quebra de linha */
+    }
+
+    #mensagem-erro {
+      font-size: 14px;
+      color: red;
+      margin-top: 10px;
+    }
+
+    #resposta-input {
+      font-size: 14px;
+      padding: 5px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    #responder-btn {
+      margin-top: 10px;
+    }
+
+    #jogar-novamente-btn {
+      display: none; /* Inicialmente oculto */
+      margin-top: 20px;
+    }
+
+    /* Media Queries para Responsividade */
+
+    /* Para tablets */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 20px;
+      }
+
+      #tabuleiro {
+        grid-template-columns: repeat(11, 25px);
+        grid-template-rows: repeat(11, 25px);
+      }
+
+      .celula {
+        width: 25px;
+        height: 25px;
+      }
+
+      #painel-lateral {
+        width: 250px;
+        right: 10px;
+        top: 10px;
+      }
+
+      #vezJogador, #pontuacao, #pergunta-container {
+        font-size: 12px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
+
+    /* Para celulares */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 18px;
+      }
+
+      #tabuleiro {
+        grid-template-columns: repeat(11, 20px);
+        grid-template-rows: repeat(11, 20px);
+      }
+
+      .celula {
+        width: 20px;
+        height: 20px;
+      }
+
+      #painel-lateral {
+        width: 200px;
+        right: 5px;
+        top: 5px;
+      }
+
+      #vezJogador, #pontuacao, #pergunta-container {
+        font-size: 10px;
+      }
+
+      button {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+
+      #nomesJogadores {
+        grid-template-columns: 1fr;
+      }
+
+      #nomesJogadores input {
+        font-size: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz de Exatas</h1>
+
+  <div id="configuracoes">
+    <label for="numJogadores">Número de jogadores:</label>
+    <select id="numJogadores">
+      <option value="2">2</option>
+      <option value="4">4</option>
+      <option value="6">6</option>
+    </select>
+
+    <label for="dificuldade">Dificuldade:</label>
+    <select id="dificuldade">
+      <option value="facil">Fácil</option>
+      <option value="medio">Médio</option>
+      <option value="dificil">Difícil</option>
+    </select>
+
+    <div id="nomesJogadores"></div>
+    <button onclick="mostrarCamposNomes()">Inserir Nomes</button>
+    <button onclick="iniciarJogo()">Iniciar Jogo</button>
+  </div>
+
+  <div id="tabuleiro-container">
+    <div id="tabuleiro"></div>
+    <div id="temporizador-container">
+      <div id="tempoRestante">Tempo restante: <span id="tempo">00:00</span></div>
+    </div>
+    <div id="painel-lateral">
+      <div id="vezJogador">Vez de: </div>
+      <div id="pontuacao"></div>
+      <div id="pergunta-container"></div>
+      <input type="text" id="resposta-input" placeholder="Digite sua resposta (A, B, C, D)">
+      <button id="responder-btn" onclick="verificarResposta()">Responder</button>
+      <button id="dica-btn" onclick="usarDica()">Usar Dica</button>
+      <div id="mensagem-erro"></div>
+    </div>
+  </div>
+
+  <button id="jogar-novamente-btn" onclick="reiniciarJogo()">Jogar Novamente</button>
+
+  <audio id="trilha" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio.
+  </audio>
+
+  <audio id="movimento">
+    <source src="https://www.example.com/move-sound.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio.
+  </audio>
+
+  <audio id="vitoria">
+    <source src="https://www.example.com/win-sound.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio.
+  </audio>
+
+  <script>
+    const tamanhoTabuleiro = 10;
+    let jogadores = [];
+    let jogadorAtual = 0;
+    let objetivoPosicao = { x: 9, y: 9 };
+    const coresJogadores = ["#4CAF50", "#2196F3", "#FFEB3B", "#9C27B0", "#FF5722", "#795548"];
+    const nomesCores = ["Verde", "Azul", "Amarelo", "Roxo", "Laranja", "Marrom"];
+    const trilha = document.getElementById("trilha");
+    const movimentoSom = document.getElementById("movimento");
+    const vitoriaSom = document.getElementById("vitoria");
+    const tempoElemento = document.getElementById("tempo");
+    let tempoRestante = 600; // 10 minutos
+    let intervalo;
+
+    const tabuleiro = document.getElementById("tabuleiro");
+    const perguntaContainer = document.getElementById("pergunta-container");
+    const respostaInput = document.getElementById("resposta-input");
+    const mensagemErro = document.getElementById("mensagem-erro");
+    const jogarNovamenteBtn = document.getElementById("jogar-novamente-btn");
+    const dicaBtn = document.getElementById("dica-btn");
+
+    let perguntaAtual = null;
+    let xDestino, yDestino; // Variáveis para armazenar a posição de destino
+
+    // Perguntas separadas por dificuldade
+    const perguntas = {
+      facil: [
+        {
+          pergunta: "Qual é a unidade de medida da força no Sistema Internacional?",
+          opcoes: ["A) Newton", "B) Joule", "C) Watt", "D) Pascal"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é a fórmula da energia cinética?",
+          opcoes: ["A) E = mgh", "B) E = 1/2 mv²", "C) E = Fd", "D) E = Pt"],
+          resposta: "B"
+        },
+        {
+          pergunta: "Quem formulou as leis do movimento?",
+          opcoes: ["A) Newton", "B) Einstein", "C) Galileu", "D) Tesla"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é a velocidade da luz no vácuo?",
+          opcoes: ["A) 3×10⁸ m/s", "B) 3×10⁶ m/s", "C) 1×10⁸ m/s", "D) 5×10⁸ m/s"],
+          resposta: "A"
+        },
+        {
+          pergunta: "O que diz a lei de Ohm?",
+          opcoes: [
+            "A) A corrente é diretamente proporcional à tensão e inversamente proporcional à resistência",
+            "B) A corrente é inversamente proporcional à tensão",
+            "C) A resistência é diretamente proporcional à corrente",
+            "D) A tensão é inversamente proporcional à corrente"
+          ],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é a aceleração da gravidade na Terra?",
+          opcoes: ["A) 9,8 m/s²", "B) 10 m/s²", "C) 9,8 km/h²", "D) 10 km/h²"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é a unidade de medida da carga elétrica no Sistema Internacional?",
+          opcoes: ["A) Ampère", "B) Coulomb", "C) Volt", "D) Ohm"],
+          resposta: "B"
+        },
+        {
+          pergunta: "O que é carga elétrica?",
+          opcoes: [
+            "A) Energia armazenada",
+            "B) Propriedade dos corpos que causa forças elétricas",
+            "C) Movimento dos elétrons",
+            "D) Potência elétrica"
+          ],
+          resposta: "B"
+        },
+        {
+          pergunta: "Qual partícula possui carga elétrica negativa?",
+          opcoes: ["A) Próton", "B) Nêutron", "C) Elétron", "D) Íon"],
+          resposta: "C"
+        },
+        {
+          pergunta: "O que acontece quando duas cargas elétricas de sinais opostos se aproximam?",
+          opcoes: ["A) Elas se repelem", "B) Elas se atraem", "C) Elas ficam neutras", "D) Elas se transformam em luz"],
+          resposta: "B"
+        }
+      ],
+      medio: [
+        {
+          pergunta: "Qual é a integral definida de ∫₀¹ x² dx?",
+          opcoes: ["A) 1/3", "B) 1/2", "C) 1/4", "D) 2/3"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é o valor de √2 + √3?",
+          opcoes: ["A) 4", "B) Aproximadamente 3.146", "C) Aproximadamente 2.818", "D) 5"],
+          resposta: "B"
+        },
+        {
+          pergunta: "Qual é a solução para a equação quadrática 2x² - 4x + 1 = 0?",
+          opcoes: ["A) x = 1", "B) x = 0.5", "C) x = -1", "D) x = (2 ± √2)/4"],
+          resposta: "D"
+        },
+        {
+          pergunta: "Qual é o valor da soma dos ângulos internos de um polígono de 12 lados?",
+          opcoes: ["A) 180°", "B) 1080°", "C) 1440°", "D) 144°"],
+          resposta: "C"
+        },
+        {
+          pergunta: "Se um número x é tal que log(x) = 2, qual é o valor de x?",
+          opcoes: ["A) 100", "B) 10", "C) 50", "D) 1000"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é a solução para o sistema de equações 2x + 3y = 12 e x - y = 1?",
+          opcoes: ["A) x = 3, y = 2", "B) x = 2, y = 4", "C) x = 4, y = 3", "D) x = 1, y = 5"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é o valor da soma infinita ∑ₙ=₁^∞ 1/2ⁿ?",
+          opcoes: ["A) 1", "B) 2", "C) 0.5", "D) 0"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é o valor de e^(iπ) de acordo com a fórmula de Euler?",
+          opcoes: ["A) 0", "B) 1", "C) -1", "D) i"],
+          resposta: "C"
+        },
+        {
+          pergunta: "Qual é o determinante da matriz [[2, 3], [4, 5]]?",
+          opcoes: ["A) 1", "B) -2", "C) 2", "D) -1"],
+          resposta: "B"
+        },
+        {
+          pergunta: "Qual é o valor da soma dos quadrados dos primeiros 5 números naturais?",
+          opcoes: ["A) 30", "B) 55", "C) 45", "D) 60"],
+          resposta: "B"
+        }
+      ],
+      dificil: [
+        {
+          pergunta: "Qual é a unidade de medida da constante de Planck h?",
+          opcoes: ["A) Joule·s", "B) Watt·s", "C) Newton·s", "D) Coulomb·s"],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é o princípio de Heisenberg na mecânica quântica?",
+          opcoes: [
+            "A) Impossibilidade de medir posição e velocidade simultaneamente",
+            "B) A velocidade de um objeto nunca pode ultrapassar a velocidade da luz",
+            "C) O princípio da conservação da energia",
+            "D) A teoria da relatividade restrita"
+          ],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é a fórmula para calcular a força gravitacional entre dois corpos de massas m₁ e m₂ separados por uma distância r?",
+          opcoes: [
+            "A) F = G (m₁ m₂)/r²",
+            "B) F = G (m₁ + m₂)/r",
+            "C) F = G (m₁ m₂)/r",
+            "D) F = G (m₁ m₂)/r³"
+          ],
+          resposta: "A"
+        },
+        {
+          pergunta: "O que é o efeito Doppler?",
+          opcoes: [
+            "A) Mudança na frequência devido ao movimento relativo entre fonte e observador",
+            "B) Difração de ondas em torno de um obstáculo",
+            "C) Reflexão de ondas em superfícies metálicas",
+            "D) Absorção de ondas por materiais opacos"
+          ],
+          resposta: "A"
+        },
+        {
+          pergunta: "Qual é a equação de Maxwell que descreve a lei de Gauss para o campo elétrico?",
+          opcoes: [
+            "A) ∇·E = ρ/ε₀",
+            "B) ∇·B = 0",
+            "C) ∇×E = -∂B/∂t",
+            "D) ∇×B = μ₀ J"
+          ],
+          resposta: "A"
+        },
+        {
+          pergunta: "O que é a Lei de Coulomb?",
+          opcoes: [
+            "A) A atração entre cargas magnéticas",
+            "B) A relação entre corrente elétrica e resistência",
+            "C) A força entre duas cargas elétricas",
+            "D) O comportamento dos nêutrons"
+          ],
+          resposta: "C"
+        },
+        {
+          pergunta: "Quais partículas compõem um átomo?",
+          opcoes: [
+            "A) Prótons, nêutrons e elétrons",
+            "B) Prótons e nêutrons",
+            "C) Prótons e íons",
+            "D) Nêutrons e elétrons"
+          ],
+          resposta: "A"
+        },
+        {
+          pergunta: "O que ocorre quando um corpo recebe mais elétrons do que prótons?",
+          opcoes: [
+            "A) O corpo fica com carga positiva",
+            "B) O corpo fica com carga neutra",
+            "C) O corpo fica com carga negativa",
+            "D) O corpo perde carga"
+          ],
+          resposta: "C"
+        },
+        {
+          pergunta: "O que é um condutor elétrico?",
+          opcoes: [
+            "A) Um material que impede o fluxo de elétrons",
+            "B) Um material que facilita o fluxo de elétrons",
+            "C) Um material que armazena carga",
+            "D) Um material que atrai elétrons"
+          ],
+          resposta: "B"
+        },
+        {
+          pergunta: "O que é um isolante elétrico?",
+          opcoes: [
+            "A) Material que facilita a passagem de corrente",
+            "B) Material que impede a passagem de corrente",
+            "C) Material que armazena cargas elétricas",
+            "D) Material que amplifica a corrente elétrica"
+          ],
+          resposta: "B"
+        }
+      ]
+    };
+
+    let perguntasDisponiveis = { ...perguntas }; // Cria uma cópia das perguntas
+
+    function criarTabuleiro() {
+      tabuleiro.innerHTML = "";
+
+      // Primeira linha com números
+      tabuleiro.appendChild(document.createElement("div")); // canto vazio
+      for (let x = 0; x < tamanhoTabuleiro; x++) {
+        const label = document.createElement("div");
+        label.className = "coordenada";
+        label.textContent = x + 1;
+        tabuleiro.appendChild(label);
+      }
+
+      // Linhas com letras + células
+      for (let y = 0; y < tamanhoTabuleiro; y++) {
+        const rowLabel = document.createElement("div");
+        rowLabel.className = "coordenada";
+        rowLabel.textContent = String.fromCharCode(65 + y);
+        tabuleiro.appendChild(rowLabel);
+        for (let x = 0; x < tamanhoTabuleiro; x++) {
+          const celula = document.createElement("div");
+          celula.className = "celula";
+          celula.dataset.x = x;
+          celula.dataset.y = y;
+          celula.addEventListener("click", () => moverJogador(x, y));
+          tabuleiro.appendChild(celula);
+        }
+      }
+
+      adicionarPontos();
+      adicionarLinhaInicio();
+      adicionarLinhaChegada();
+    }
+
+    function adicionarLinhaInicio() {
+      for (let x = 0; x < tamanhoTabuleiro; x++) {
+        const celula = document.querySelector(`.celula[data-x='${x}'][data-y='0']`);
+        if (celula) {
+          celula.classList.add("linha-inicio");
+        }
+      }
+    }
+
+    function adicionarLinhaChegada() {
+      for (let x = 0; x < tamanhoTabuleiro; x++) {
+        const celula = document.querySelector(`.celula[data-x='${x}'][data-y='9']`);
+        if (celula) {
+          celula.classList.add("linha-chegada");
+        }
+      }
+    }
+
+    function adicionarPontos() {
+      const pontos = [3, 4, 5];
+      for (let i = 0; i < 10; i++) {
+        const x = Math.floor(Math.random() * tamanhoTabuleiro);
+        const y = Math.floor(Math.random() * tamanhoTabuleiro);
+        const celula = document.querySelector(`.celula[data-x='${x}'][data-y='${y}']`);
+        if (celula && !celula.querySelector(".ponto")) {
+          const ponto = document.createElement("div");
+          ponto.className = "ponto";
+          ponto.textContent = pontos[Math.floor(Math.random() * pontos.length)];
+          celula.appendChild(ponto);
+        }
+      }
+    }
+
+    function mostrarCamposNomes() {
+      const num = parseInt(document.getElementById("numJogadores").value);
+      const container = document.getElementById("nomesJogadores");
+      container.innerHTML = "";
+      for (let i = 0; i < num; i++) {
+        container.innerHTML += `<input type="text" id="jogador${i}" placeholder="Nome do Jogador ${i + 1}"> `;
+      }
+    }
+
+    function iniciarJogo() {
+      const num = parseInt(document.getElementById("numJogadores").value);
+
+      // Verifica se o número de jogadores é maior que o número de células na linha de início
+      if (num > tamanhoTabuleiro) {
+        alert("Número de jogadores excede o número de células na linha de início!");
+        return;
+      }
+
+      trilha.play();
+
+      jogadores = [];
+      const posicoesOcupadas = new Set(); // Rastreia as posições já ocupadas
+
+      for (let i = 0; i < num; i++) {
+        let x;
+        do {
+          x = Math.floor(Math.random() * tamanhoTabuleiro);
+        } while (posicoesOcupadas.has(x)); // Garante que a posição seja única
+
+        posicoesOcupadas.add(x); // Marca a posição como ocupada
+
+        const nome = document.getElementById(`jogador${i}`).value || `Jogador ${i + 1}`;
+        const y = 0; // Todos começam na linha de início (y = 0)
+        jogadores.push({ nome, x, y, cor: coresJogadores[i], pontos: 0, dicas: 3 }); // Cada jogador começa com 3 dicas
+      }
+
+      jogadorAtual = 0;
+      tempoRestante = 600; // Reinicia o temporizador
+      criarTabuleiro();
+      atualizarTabuleiro();
+      iniciarTemporizador();
+      jogarNovamenteBtn.style.display = "none"; // Oculta o botão "Jogar Novamente"
+    }
+
+    function iniciarTemporizador() {
+      intervalo = setInterval(() => {
+        tempoRestante--;
+        if (tempoRestante <= 0) {
+          clearInterval(intervalo);
+          encerrarJogo();
+        }
+        const minutos = Math.floor(tempoRestante / 60);
+        const segundos = tempoRestante % 60;
+        tempoElemento.textContent = `${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
+      }, 1000);
+    }
+
+    function encerrarJogo() {
+      alert("Tempo esgotado! Fim de jogo.");
+      let vencedor = jogadores[0];
+      jogadores.forEach(jogador => {
+        if (jogador.pontos > vencedor.pontos) {
+          vencedor = jogador;
+        }
+      });
+      alert(`O vencedor é ${vencedor.nome} com ${vencedor.pontos} pontos!`);
+      jogarNovamenteBtn.style.display = "block"; // Exibe o botão "Jogar Novamente"
+    }
+
+    function reiniciarJogo() {
+      jogadores = [];
+      jogadorAtual = 0;
+      tempoRestante = 600;
+      clearInterval(intervalo);
+      criarTabuleiro();
+      atualizarTabuleiro();
+      jogarNovamenteBtn.style.display = "none"; // Oculta o botão "Jogar Novamente"
+    }
+
+    function atualizarTabuleiro() {
+      const celulas = document.querySelectorAll(".celula");
+      celulas.forEach(celula => {
+        celula.classList.remove("jogador");
+        celula.style.backgroundColor = "rgba(255, 255, 255, 0.1)"; /* Fundo dos quadrados */
+        const x = parseInt(celula.dataset.x);
+        const y = parseInt(celula.dataset.y);
+        jogadores.forEach(jogador => {
+          if (x === jogador.x && y === jogador.y) {
+            celula.classList.add("jogador");
+            celula.style.backgroundColor = jogador.cor;
+          }
+        });
+        if (y === 9) { // Linha J (y = 9) é a linha de chegada
+          celula.style.backgroundColor = "#ff0000"; /* Vermelho para a linha de chegada */
+        }
+      });
+
+      const jogador = jogadores[jogadorAtual];
+      document.getElementById("vezJogador").innerText = `Vez de: ${jogador.nome}`;
+      atualizarPontuacao();
+    }
+
+    function atualizarPontuacao() {
+      const div = document.getElementById("pontuacao");
+      div.innerHTML = "<strong>Pontuação:</strong><br>";
+      jogadores.forEach((j, index) => {
+        const corNome = nomesCores[index];
+        div.innerHTML += `Quadrado ${corNome}: ${j.nome} - ${j.pontos} pts<br>`;
+      });
+    }
+
+    function moverJogador(x, y) {
+      const jogador = jogadores[jogadorAtual];
+      const dx = Math.abs(x - jogador.x);
+      const dy = Math.abs(y - jogador.y);
+      if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+        xDestino = x;
+        yDestino = y;
+        fazerPergunta();
+      } else {
+        mensagemErro.textContent = "Movimento inválido. Só pode mover para o lado ou para cima/baixo.";
+        setTimeout(() => {
+          mensagemErro.textContent = "";
+        }, 2000);
+      }
+    }
+
+    function fazerPergunta() {
+      const dificuldade = document.getElementById("dificuldade").value;
+      const perguntasDificuldade = perguntasDisponiveis[dificuldade];
+      if (perguntasDificuldade.length === 0) {
+        alert("Todas as perguntas foram utilizadas!");
+        return;
+      }
+      const indicePergunta = Math.floor(Math.random() * perguntasDificuldade.length);
+      perguntaAtual = perguntasDificuldade[indicePergunta];
+      perguntasDificuldade.splice(indicePergunta, 1); // Remove a pergunta usada
+      perguntaContainer.innerHTML = `<strong>Pergunta:</strong><br>${perguntaAtual.pergunta}<br>${perguntaAtual.opcoes.join("<br>")}`;
+      respostaInput.value = "";
+      respostaInput.focus();
+    }
+
+    function verificarResposta() {
+      const resposta = respostaInput.value.toUpperCase();
+      if (resposta === perguntaAtual.resposta) {
+        movimentoSom.play();
+        const jogador = jogadores[jogadorAtual];
+        jogador.x = xDestino;
+        jogador.y = yDestino;
+        const celula = document.querySelector(`.celula[data-x='${xDestino}'][data-y='${yDestino}']`);
+        const ponto = celula.querySelector(".ponto");
+        if (ponto) {
+          jogador.pontos += parseInt(ponto.textContent);
+          celula.removeChild(ponto);
+        }
+        atualizarTabuleiro();
+        jogadorAtual = (jogadorAtual + 1) % jogadores.length;
+      } else {
+        mensagemErro.textContent = "Resposta errada! Perdeu a vez.";
+        setTimeout(() => {
+          mensagemErro.textContent = "";
+        }, 2000);
+        jogadorAtual = (jogadorAtual + 1) % jogadores.length;
+      }
+      perguntaContainer.innerHTML = "";
+      respostaInput.value = "";
+      atualizarTabuleiro();
+    }
+
+    function usarDica() {
+      const jogador = jogadores[jogadorAtual];
+      if (jogador.dicas > 0) {
+        jogador.dicas--;
+        const opcoes = perguntaAtual.opcoes;
+        const respostaCorreta = perguntaAtual.resposta;
+        const opcaoCorreta = opcoes.find(opcao => opcao.startsWith(respostaCorreta));
+        alert(`Dica: A resposta correta é ${opcaoCorreta}`);
+      } else {
+        alert("Você não tem mais dicas disponíveis!");
+      }
+    }
+
+    criarTabuleiro();
+  </script>
+</body>
+</html>
